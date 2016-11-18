@@ -14,23 +14,25 @@ import java.util.zip.GZIPOutputStream;
  */
 public class GzipZipper implements Zipper {
     @Override
-    public void zip(String inFilePath, String outFilePath, long uncompressedSize) throws IOException {
-        {
-            try (GZIPOutputStream zipper = new GZIPOutputStream(new FileOutputStream(outFilePath))) {
+    public void zipAndCopy(String inFilePath, String outFilePath, long uncompressedSize, int noOfCopies) throws IOException {
+        try (GZIPOutputStream zipper = new GZIPOutputStream(new FileOutputStream(outFilePath))) {
 
-                //read all the content of the file in to ByteBuffers
-                ByteBuffer[] byteBuffs = FileUtils.readFileToByteBuffers(inFilePath);
-                //calculate no of times we need to add input content to zip file
-                long maxCount = uncompressedSize / Stream.of(byteBuffs).map(buf -> buf.capacity()).collect(Collectors.summingInt(Integer::intValue));
+            //read all the content of the file in to ByteBuffers
+            ByteBuffer[] byteBuffs = FileUtils.readFileToByteBuffers(inFilePath);
+            //calculate no of times we need to add input content to zipAndCopy file
+            long maxCount = uncompressedSize / Stream.of(byteBuffs).map(buf -> buf.capacity()).collect(Collectors.summingInt(Integer::intValue));
 
-                //write to zip file
-                for (int i = 0; i < maxCount; i++) {
-                    for (int j = 0; j < byteBuffs.length; j++) {
-                        zipper.write(byteBuffs[j].array());
-                    }
+            //write to zipAndCopy file
+            for (int i = 0; i < maxCount; i++) {
+                for (int j = 0; j < byteBuffs.length; j++) {
+                    zipper.write(byteBuffs[j].array());
                 }
-
             }
+
+        }
+
+        if(noOfCopies > 1) {
+            duplicate(outFilePath, noOfCopies-1);
         }
     }
 }

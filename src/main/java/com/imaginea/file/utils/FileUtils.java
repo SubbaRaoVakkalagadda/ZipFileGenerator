@@ -3,9 +3,10 @@ package com.imaginea.file.utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.IntStream;
 
 /**
  * Created by subbaraov on 18/11/16.
@@ -42,5 +43,17 @@ public class FileUtils {
             inChannel.read(byteBuffs);
             return  byteBuffs;
         }
+    }
+
+    public static void duplicate(String inFilePath, int noOfFiles) {
+        Path inPath = Paths.get(inFilePath);
+        IntStream.range(0, noOfFiles).parallel().forEach(i -> {
+            try {
+                Files.copy(inPath, Paths.get(inFilePath + i), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
     }
 }

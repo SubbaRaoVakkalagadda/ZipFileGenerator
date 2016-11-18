@@ -12,12 +12,16 @@ import java.util.Map;
 public class Java7Zipper implements Zipper {
 
     @Override
-    public void zip(String inFilePath, String outFilePath, long uncompressedSize) throws IOException {
+    public void zipAndCopy(String inFilePath, String outFilePath, long uncompressedSize, int noOfCopies) throws IOException {
         // convert the filename to a URI
         try(FileSystem zipFileSystem = createZipFileSystem(outFilePath)) {
             final Path src = Paths.get(inFilePath);
             final Path pathInZipFile = zipFileSystem.getPath("/" + src.getFileName().toString());
             Files.copy(src, pathInZipFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        if(noOfCopies > 1) {
+            duplicate(outFilePath, noOfCopies-1);
         }
     }
 
