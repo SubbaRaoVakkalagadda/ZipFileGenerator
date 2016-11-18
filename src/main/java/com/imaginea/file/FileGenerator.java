@@ -1,4 +1,4 @@
-package com.imaginea;
+package com.imaginea.file;
 
 import java.io.IOException;
 import java.nio.file.Path;
